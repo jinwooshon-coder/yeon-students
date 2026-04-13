@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수학 풀이 노트 · 최우혁 중1 · 연플래닝</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+<style>
+:root {
+  --bg: #F0F4F5;
+  --surface: #D4E0E3;
+  --surface2: #c4d4d8;
+  --primary: #5A7A82;
+  --primary-dark: #4a6870;
+  --muted: #A8B5B8;
+  --text: #2C3E42;
+  --text-light: #6B8A90;
+  --success: #6B8F71;
+  --error: #8F6B6B;
+  --warning: #8F856B;
+  --gold: #E8A200;
+  --radius: 12px;
+  --shadow: 0 1px 4px rgba(0,0,0,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;}
+
+/* ── APP BAR ── */
+.app-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;background:var(--primary);
+  position:sticky;top:0;z-index:200;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+.app-bar-left{display:flex;align-items:center;gap:10px;}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--gold);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;}
+.app-title{color:#fff;font-weight:700;font-size:16px;line-height:1.2;}
+.app-sub{color:rgba(255,255,255,0.75);font-size:12px;}
+.api-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);
+  border-radius:8px;color:#fff;padding:6px 12px;cursor:pointer;font-size:12px;font-family:inherit;}
+.api-btn:hover{background:rgba(255,255,255,0.25);}
+
+/* ── PROGRESS HEADER ── */
+.progress-section{padding:16px;background:var(--primary-dark);}
+.stats-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.stat-card{background:rgba(255,255,255,0.12);border-radius:10px;padding:10px 14px;flex:1;min-width:80px;text-align:center;}
+.stat-num{font-size:22px;font-weight:700;color:var(--gold);}
+.stat-label{font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px;}
+.progress-bar-wrap{background:rgba(255,255,255,0.15);border-radius:8px;height:8px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--gold);border-radius:8px;transition:width 0.5s;}
+.progress-text{color:rgba(255,255,255,0.7);font-size:12px;margin-top:6px;text-align:right;}
+
+/* ── TOPIC TABS ── */
+.tab-row{display:flex;gap:0;overflow-x:auto;background:var(--surface);border-bottom:2px solid var(--surface2);}
+.tab-btn{padding:10px 16px;border:none;background:none;cursor:pointer;
+  font-family:inherit;font-size:13px;font-weight:500;color:var(--text-light);
+  white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all 0.2s;}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:700;}
+.tab-btn:hover{color:var(--primary);}
+
+/* ── CONTENT AREA ── */
+.content{padding:16px;max-width:720px;margin:0 auto;}
+
+/* ── PROBLEM CARD ── */
+.problem-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);
+  margin-bottom:14px;overflow:hidden;transition:box-shadow 0.2s;}
+.problem-card:hover{box-shadow:0 3px 12px rgba(0,0,0,0.12);}
+.card-header{display:flex;align-items:center;justify-content:space-between;
+  padding:13px 16px;cursor:pointer;gap:8px;}
+.qnum{background:var(--primary);color:#fff;border-radius:8px;
+  font-size:13px;font-weight:700;padding:4px 10px;flex-shrink:0;}
+.qnum.error{background:var(--error);}
+.qnum.check{background:var(--success);}
+.q-preview{flex:1;font-size:14px;color:var(--text);font-weight:500;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;}
+.badge-row{display:flex;gap:6px;flex-shrink:0;align-items:center;}
+.badge{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:500;}
+.badge-ok{background:#e8f5e9;color:#4a7c50;}
+.badge-err{background:#fce8e8;color:#7c4a4a;}
+.badge-check{background:#fff3e0;color:#8f6800;}
+.chevron{color:var(--muted);transition:transform 0.3s;flex-shrink:0;}
+.card-body{display:none;padding:0 16px 16px;}
+.card-body.open{display:block;}
+
+/* ── SOLUTION SECTIONS ── */
+.sol-section{margin-top:12px;}
+.sol-label{font-size:12px;font-weight:700;letter-spacing:0.5px;
+  text-transform:uppercase;color:var(--text-light);margin-bottom:8px;}
+.student-answer{background:#fff8e1;border-left:4px solid var(--gold);
+  border-radius:0 8px 8px 0;padding:10px 12px;font-size:14px;}
+.correct-answer{background:#e8f5f6;border-left:4px solid var(--primary);
+  border-radius:0 8px 8px 0;padding:10px 12px;font-size:14px;}
+.error-note{background:#fce8e8;border-left:4px solid var(--error);
+  border-radius:0 8px 8px 0;padding:10px 12px;font-size:13px;color:var(--error);margin-top:8px;}
+.solution-steps{background:var(--bg);border-radius:10px;padding:12px;margin-top:8px;font-size:14px;}
+.step{display:flex;gap:8px;margin-bottom:8px;}
+.step:last-child{margin-bottom:0;}
+.step-num{background:var(--primary);color:#fff;border-radius:50%;
+  width:22px;height:22px;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.step-content{flex:1;font-size:13px;line-height:1.7;}
+
+/* ── AI SECTION ── */
+.ai-section{margin-top:14px;}
+.ai-methods{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.ai-method-btn{padding:7px 14px;border:1.5px solid var(--primary);background:#fff;
+  border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--primary);
+  font-family:inherit;transition:all 0.2s;}
+.ai-method-btn:hover,.ai-method-btn.selected{background:var(--primary);color:#fff;}
+.ai-result{background:#f0f7f9;border-radius:10px;padding:14px;margin-top:10px;
+  font-size:13px;line-height:1.8;min-height:60px;display:none;}
+.ai-result.visible{display:block;}
+.ai-result.loading{display:flex;align-items:center;gap:8px;color:var(--text-light);}
+.dots-anim::after{content:'...';animation:dots 1.2s infinite;}
+@keyframes dots{0%{content:''}33%{content:'.'}66%{content:'..'}100%{content:'...'}}
+.ai-recommend{background:#fff3cd;border:1px solid #ffe082;border-radius:8px;
+  padding:10px 12px;margin-top:10px;font-size:12px;color:#5d4037;display:none;}
+.ai-recommend.visible{display:block;}
+.ai-recommend strong{color:var(--gold);}
+
+/* ── UNDERSTANDING BUTTONS ── */
+.understand-row{display:flex;gap:8px;margin-top:12px;}
+.und-btn{flex:1;padding:9px;border:1.5px solid var(--surface2);background:#fff;
+  border-radius:10px;cursor:pointer;font-family:inherit;font-size:13px;
+  font-weight:500;transition:all 0.2s;}
+.und-btn.understood{background:var(--success);border-color:var(--success);color:#fff;}
+.und-btn.not-understood{background:var(--error);border-color:var(--error);color:#fff;}
+.und-btn:not(.understood):not(.not-understood):hover{background:var(--surface);}
+
+/* ── API KEY MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;
+  display:none;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:16px;padding:24px;max-width:400px;width:100%;}
+.modal h3{font-size:18px;font-weight:700;margin-bottom:8px;}
+.modal p{font-size:13px;color:var(--text-light);margin-bottom:16px;}
+.api-input{width:100%;padding:10px 12px;border:1.5px solid var(--surface2);
+  border-radius:10px;font-size:14px;font-family:inherit;margin-bottom:12px;}
+.api-input:focus{outline:none;border-color:var(--primary);}
+.modal-btns{display:flex;gap:8px;}
+.btn-primary{background:var(--primary);color:#fff;border:none;border-radius:10px;
+  padding:10px 20px;cursor:pointer;font-family:inherit;font-weight:500;flex:1;}
+.btn-cancel{background:var(--bg);color:var(--text);border:none;border-radius:10px;
+  padding:10px 20px;cursor:pointer;font-family:inherit;}
+
+/* ── TOPIC SECTION ── */
+.topic-section{display:none;}
+.topic-section.active{display:block;}
+.topic-header{background:var(--surface);border-radius:var(--radius);
+  padding:12px 16px;margin-bottom:14px;}
+.topic-header h2{font-size:17px;font-weight:700;color:var(--primary);}
+.topic-header p{font-size:12px;color:var(--text-light);margin-top:4px;}
+.topic-progress{margin-top:8px;}
+.topic-bar{background:var(--surface2);border-radius:8px;height:6px;overflow:hidden;margin-top:4px;}
+.topic-bar-fill{height:100%;background:var(--primary);border-radius:8px;transition:width 0.5s;}
+
+/* ── REVIEW MODE ── */
+.review-btn{position:fixed;bottom:20px;right:16px;background:var(--gold);
+  border:none;border-radius:50%;width:52px;height:52px;cursor:pointer;
+  font-size:20px;box-shadow:0 4px 16px rgba(232,162,0,0.4);z-index:100;
+  display:flex;align-items:center;justify-content:center;}
+
+/* ── OVERALL REVIEW PANEL ── */
+.review-panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:400;
+  overflow-y:auto;padding:16px;}
+.review-panel.open{display:block;}
+.review-content{background:#fff;border-radius:16px;max-width:600px;margin:0 auto;padding:24px;}
+.review-close{float:right;background:var(--bg);border:none;border-radius:8px;
+  padding:6px 12px;cursor:pointer;font-size:13px;}
+
+/* ── MISC ── */
+.divider{height:1px;background:var(--surface);margin:12px 0;}
+.tag{display:inline-block;background:var(--surface);color:var(--text-light);
+  font-size:11px;padding:2px 8px;border-radius:12px;margin-right:4px;}
+.recommended-label{background:var(--gold);color:#fff;font-size:11px;
+  padding:2px 8px;border-radius:12px;font-weight:700;}
+
+@media(min-width:768px){
+  .content{padding:24px;}
+  .stats-row .stat-card{min-width:100px;}
+}
+</style>
+</head>
+<body>
+
+<!-- APP BAR -->
+<div class="app-bar">
+  <div class="app-bar-left">
+    <div class="avatar">우</div>
+    <div>
+      <div class="app-title">최우혁 수학 풀이 노트</div>
+      <div class="app-sub">중1 · 연플래닝 · 2026.04.13</div>
+    </div>
+  </div>
+  <button class="api-btn" onclick="openApiModal()">⚙ AI 설정</button>
+</div>
+
+<!-- PROGRESS HEADER -->
+<div class="progress-section">
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-total">25</div>
+      <div class="stat-label">전체 문제</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-viewed">0</div>
+      <div class="stat-label">학습 완료</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-understood">0</div>
+      <div class="stat-label">이해함</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-ai">0</div>
+      <div class="stat-label">AI 질문</div>
+    </div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+  <div class="progress-text" id="progress-text">학습을 시작해보세요!</div>
+</div>
+
+<!-- TOPIC TABS -->
+<div class="tab-row">
+  <button class="tab-btn active" onclick="switchTab(0)">📐 전체</button>
+  <button class="tab-btn" onclick="switchTab(1)">🔄 순환소수</button>
+  <button class="tab-btn" onclick="switchTab(2)">⚡ 지수법칙</button>
+  <button class="tab-btn" onclick="switchTab(3)">✖ 단항식</button>
+  <button class="tab-btn" onclick="switchTab(4)">➕ 다항식</button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TOPIC 0: 전체 (All problems)
+════════════════════════════════════════════ -->
+<div class="topic-section active" id="tab-0">
+<div class="content">
+
+<!-- ── 단원 그룹: 순환소수 ── -->
+<div class="topic-header">
+  <h2>🔄 유리수와 순환소수</h2>
+  <p>무한소수, 순환소수 표기, 분수 변환 · 유한소수 조건</p>
+  <div class="topic-progress">
+    <div class="topic-bar"><div class="topic-bar-fill" id="bar-1" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- Q1 -->
+<div class="problem-card" id="card-1">
+  <div class="card-header" onclick="toggleCard(1)">
+    <span class="qnum" id="qnum-1">1번</span>
+    <span class="q-preview">순환소수 판별 — ① 선택</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-1" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-1">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-1">
+    <div class="sol-section">
+      <div class="sol-label">문제 유형</div>
+      <div style="font-size:14px;color:var(--text-light);">순환소수 여부를 판별하는 선택형 문제 (답: ①)</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">① 선택 → ⭕ 정답</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 핵심 개념</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">분수를 소수로 나누었을 때 나머지가 <strong>0이 되면</strong> 유한소수</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">나머지가 0이 되지 않고 <strong>반복(순환)</strong>되면 순환소수</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">기약분수의 분모가 $2^m \times 5^n$ 꼴이면 유한소수, 아니면 순환소수</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이 선택</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(1,'개념설명')">개념으로 이해하기</button>
+        <button class="ai-method-btn" onclick="askAI(1,'예시풀이')">구체적 예시로 풀기</button>
+        <button class="ai-method-btn" onclick="askAI(1,'암기법')">쉽게 외우는 법</button>
+      </div>
+      <div class="ai-result" id="ai-1"></div>
+      <div class="ai-recommend" id="rec-1"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-1-yes" onclick="markUnderstood(1,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-1-no" onclick="markUnderstood(1,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q2 -->
+<div class="problem-card" id="card-2">
+  <div class="card-header" onclick="toggleCard(2)">
+    <span class="qnum" id="qnum-2">2번</span>
+    <span class="q-preview">순환소수 표기 — 0.3̄, 1.2̄7̄, 0.41̄6̄</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-2" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-2">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-2">
+    <div class="sol-section">
+      <div class="sol-label">문제</div>
+      <div style="font-size:14px;">다음 순환소수를 점 표기로 나타내어라.</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안 & 정답</div>
+      <div class="student-answer">
+        (1) $0.\overline{3}$ &nbsp;&nbsp; (2) $1.\overline{27}$ &nbsp;&nbsp; (3) $0.41\overline{6}$ &nbsp;&nbsp; → ⭕ 전부 정답
+      </div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><strong>(1)</strong> 0.333… → 반복 부분 3 → 점 하나: $0.\dot{3}$ 또는 $0.\overline{3}$</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><strong>(2)</strong> 1.272727… → 반복 부분 27 → 처음과 끝에 점: $1.\dot{2}\dot{7}$ 또는 $1.\overline{27}$</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><strong>(3)</strong> 0.41666… → 반복 부분 6만 → $0.41\dot{6}$ 또는 $0.41\overline{6}$ (4, 1은 반복 안 함!)</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(2,'개념설명')">순환마디 개념 설명</button>
+        <button class="ai-method-btn" onclick="askAI(2,'예시풀이')">다양한 예시 더 보기</button>
+        <button class="ai-method-btn" onclick="askAI(2,'실수주의')">실수하기 쉬운 포인트</button>
+      </div>
+      <div class="ai-result" id="ai-2"></div>
+      <div class="ai-recommend" id="rec-2"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-2-yes" onclick="markUnderstood(2,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-2-no" onclick="markUnderstood(2,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q9 -->
+<div class="problem-card" id="card-9">
+  <div class="card-header" onclick="toggleCard(9)">
+    <span class="qnum" id="qnum-9">9번</span>
+    <span class="q-preview">순환소수 → 분수: 27/99</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-9" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-9">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-9">
+    <div class="sol-section">
+      <div class="sol-label">문제</div>
+      <div style="font-size:14px;">$0.\overline{27}$을 분수로 나타내어라.</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">$\dfrac{27}{99}$ (기약분수로 $\dfrac{3}{11}$)</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 공식 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">공</div><div class="step-content">순환마디가 <em>n</em>자리이면 분자: (전체 수) − (순환 안 되는 부분), 분모: $\underbrace{99\cdots9}_{n개}$</div></div>
+        <div class="step"><div class="step-num">1</div><div class="step-content">$0.\overline{27}$: 순환마디 "27" (2자리) → 분모 99</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">$\dfrac{27}{99} = \dfrac{3}{11}$</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(9,'방정식풀이')">방정식으로 풀기</button>
+        <button class="ai-method-btn" onclick="askAI(9,'공식암기')">공식 빠르게 쓰기</button>
+        <button class="ai-method-btn" onclick="askAI(9,'검증')">답 검증하는 방법</button>
+      </div>
+      <div class="ai-result" id="ai-9"></div>
+      <div class="ai-recommend" id="rec-9"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-9-yes" onclick="markUnderstood(9,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-9-no" onclick="markUnderstood(9,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q10 -->
+<div class="problem-card" id="card-10">
+  <div class="card-header" onclick="toggleCard(10)">
+    <span class="qnum" id="qnum-10">10번</span>
+    <span class="q-preview">$1.2\overline{3}$ 를 분수로: 37/30</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-10" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-10">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-10">
+    <div class="sol-section">
+      <div class="sol-label">문제</div>
+      <div style="font-size:14px;">$1.2\overline{3} = 1.2333\ldots$을 분수로 나타내어라.</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">
+        $\dfrac{123-12}{90} = \dfrac{111}{90} = \dfrac{37}{30}$ → ⭕ 정답
+      </div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 공식 풀이 (핵심!)</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">공</div><div class="step-content">순환 안 되는 소수 <em>a</em>자리, 순환마디 <em>b</em>자리 → 분모: $\underbrace{99\cdots9}_{b}\underbrace{00\cdots0}_{a}$</div></div>
+        <div class="step"><div class="step-num">1</div><div class="step-content">$1.2\overline{3}$: 소수점 뒤 순환 안 됨 "2" (1자리), 순환 "3" (1자리)</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">분모: $90$ (9가 1개, 0이 1개), 분자: $123 - 12 = 111$</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">$\dfrac{111}{90} = \dfrac{37}{30}$ ✓</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(10,'방정식풀이')">방정식 세우기</button>
+        <button class="ai-method-btn" onclick="askAI(10,'공식설명')">공식 왜 이렇게 되나</button>
+        <button class="ai-method-btn" onclick="askAI(10,'유사문제')">비슷한 문제 연습</button>
+      </div>
+      <div class="ai-result" id="ai-10"></div>
+      <div class="ai-recommend" id="rec-10"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-10-yes" onclick="markUnderstood(10,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-10-no" onclick="markUnderstood(10,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q11 -->
+<div class="problem-card" id="card-11">
+  <div class="card-header" onclick="toggleCard(11)">
+    <span class="qnum" id="qnum-11">11번</span>
+    <span class="q-preview">$\frac{a}{2^2 \times 3 \times 5}$ 유한소수 조건 → a=3</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-11" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-11">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-11">
+    <div class="sol-section">
+      <div class="sol-label">문제</div>
+      <div style="font-size:14px;">$\dfrac{a}{2^2 \times 3 \times 5}$이 유한소수가 되려면 자연수 $a$의 최솟값은?</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">$a$는 3의 배수 → 최솟값 $a = 3$ → ⭕ 정답</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">유한소수 조건: 기약분수의 분모가 $2^m \times 5^n$ 꼴이어야 함</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">분모 $2^2 \times 3 \times 5$에서 <strong>3이 문제!</strong> 3이 약분돼야 함</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">$a$가 3의 배수이면 분자와 분모의 3이 약분됨 → 최솟값 $a=3$</div></div>
+        <div class="step"><div class="step-num">확</div><div class="step-content">$\dfrac{3}{2^2 \times 3 \times 5} = \dfrac{1}{20} = 0.05$ ← 유한소수 ✓</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(11,'개념설명')">유한소수 원리 이해</button>
+        <button class="ai-method-btn" onclick="askAI(11,'응용')">응용 문제 풀기</button>
+        <button class="ai-method-btn" onclick="askAI(11,'암기법')">빠른 판별 방법</button>
+      </div>
+      <div class="ai-result" id="ai-11"></div>
+      <div class="ai-recommend" id="rec-11"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-11-yes" onclick="markUnderstood(11,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-11-no" onclick="markUnderstood(11,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q22 -->
+<div class="problem-card" id="card-22">
+  <div class="card-header" onclick="toggleCard(22)">
+    <span class="qnum" id="qnum-22">22번</span>
+    <span class="q-preview">$\frac{a}{2^2 \times 3 \times 5^2}$ 유한소수 개수 → 16개</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-22" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-22">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-22">
+    <div class="sol-section">
+      <div class="sol-label">문제</div>
+      <div style="font-size:14px;">$\dfrac{a}{2^2 \times 3 \times 5^2}$이 유한소수가 되도록 하는 자연수 $a$ (3 이상 48 이하)의 개수는?</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">$a$=3의 배수, 3~48 중 16개 → ⭕ 정답</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">분모 $2^2 \times 3 \times 5^2$에서 3이 약분되려면 $a$가 3의 배수여야 함</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">3 이상 48 이하의 3의 배수: 3, 6, 9, 12, … , 48</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">개수: $\dfrac{48-3}{3} + 1 = 15 + 1 = 16$개 ✓</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(22,'수열로풀기')">등차수열로 개수 세기</button>
+        <button class="ai-method-btn" onclick="askAI(22,'실수포인트')">실수하기 쉬운 부분</button>
+      </div>
+      <div class="ai-result" id="ai-22"></div>
+      <div class="ai-recommend" id="rec-22"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-22-yes" onclick="markUnderstood(22,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-22-no" onclick="markUnderstood(22,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q25 -->
+<div class="problem-card" id="card-25">
+  <div class="card-header" onclick="toggleCard(25)">
+    <span class="qnum" id="qnum-25">25번</span>
+    <span class="q-preview">5/12 = 0.41̄6̄, 유한소수 h=3</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-25" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-25">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-25">
+    <div class="sol-section">
+      <div class="sol-label">문제</div>
+      <div style="font-size:14px;">(1) $\dfrac{5}{12}$을 소수로 나타내어라. &nbsp;&nbsp; (2) $\dfrac{5h}{2 \times 3}$이 유한소수가 되는 최솟값 $h$는?</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">
+        (1) $0.41\overline{6}$ (나눗셈 계산 완료) ⭕ &nbsp;&nbsp; (2) $h=3$ ⭕
+      </div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">(1) $5 \div 12$: 5.000… ÷ 12 = 0.4166… = $0.41\overline{6}$</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">(2) $\dfrac{5h}{2 \times 3} = \dfrac{5h}{6}$ 에서 분모의 3이 약분되려면 $h$가 3의 배수</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">최솟값 $h=3$: $\dfrac{5 \times 3}{2 \times 3} = \dfrac{15}{6} = \dfrac{5}{2} = 2.5$ ← 유한소수 ✓</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(25,'나눗셈설명')">나눗셈 자세히 설명</button>
+        <button class="ai-method-btn" onclick="askAI(25,'유한소수조건')">유한소수 조건 정리</button>
+      </div>
+      <div class="ai-result" id="ai-25"></div>
+      <div class="ai-recommend" id="rec-25"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-25-yes" onclick="markUnderstood(25,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-25-no" onclick="markUnderstood(25,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 단원 그룹: 지수법칙 ── -->
+<div class="topic-header" style="margin-top:24px;">
+  <h2>⚡ 지수법칙</h2>
+  <p>거듭제곱의 곱셈, 나눗셈, 거듭제곱의 거듭제곱</p>
+  <div class="topic-progress">
+    <div class="topic-bar"><div class="topic-bar-fill" id="bar-2" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- Q3 -->
+<div class="problem-card" id="card-3">
+  <div class="card-header" onclick="toggleCard(3)">
+    <span class="qnum" id="qnum-3">3번</span>
+    <span class="q-preview">$a^3 \times a^5$, $(x^2)^3$, $2^3 \times 2^7$</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-3" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-3">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-3">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안 & 정답</div>
+      <div class="student-answer">
+        (1) $a^3 \times a^5 = a^8$ ⭕ &nbsp;&nbsp; (2) $(x^2)^3 = x^6$ ⭕ &nbsp;&nbsp; (3) $2^3 \times 2^7 = 2^{10}$ ⭕
+      </div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 지수법칙 3가지</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">법1</div><div class="step-content"><strong>지수 덧셈:</strong> $a^m \times a^n = a^{m+n}$ &nbsp; → &nbsp; $a^3 \times a^5 = a^{3+5} = a^8$</div></div>
+        <div class="step"><div class="step-num">법2</div><div class="step-content"><strong>거듭제곱의 거듭제곱:</strong> $(a^m)^n = a^{mn}$ &nbsp; → &nbsp; $(x^2)^3 = x^{2 \times 3} = x^6$</div></div>
+        <div class="step"><div class="step-num">법3</div><div class="step-content"><strong>같은 밑 지수 덧셈:</strong> $2^3 \times 2^7 = 2^{3+7} = 2^{10}$</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(3,'의미설명')">지수가 뭔지 이해하기</button>
+        <button class="ai-method-btn" onclick="askAI(3,'법칙정리')">법칙 표로 정리하기</button>
+        <button class="ai-method-btn" onclick="askAI(3,'실수주의')">헷갈리기 쉬운 것</button>
+      </div>
+      <div class="ai-result" id="ai-3"></div>
+      <div class="ai-recommend" id="rec-3"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-3-yes" onclick="markUnderstood(3,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-3-no" onclick="markUnderstood(3,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q4 -->
+<div class="problem-card" id="card-4">
+  <div class="card-header" onclick="toggleCard(4)">
+    <span class="qnum" id="qnum-4">4번</span>
+    <span class="q-preview">지수법칙 선택형 — ① 정답</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-4" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-4">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-4">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">① 선택 → ⭕ 정답</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 핵심 체크</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">지수법칙 선택 문제에서는 각 보기를 법칙에 대입해 검증</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">틀린 보기는 $a^m \times a^n = a^{mn}$ (곱셈 → 지수 덧셈인데 곱하는 실수) 주의</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(4,'오답피하기')">흔한 오답 패턴</button>
+      </div>
+      <div class="ai-result" id="ai-4"></div>
+      <div class="ai-recommend" id="rec-4"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-4-yes" onclick="markUnderstood(4,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-4-no" onclick="markUnderstood(4,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q12 -->
+<div class="problem-card" id="card-12">
+  <div class="card-header" onclick="toggleCard(12)">
+    <span class="qnum" id="qnum-12">12번</span>
+    <span class="q-preview">$\frac{a^8 \times a^3}{a^5} = a^6$</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-12" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-12">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-12">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">$\dfrac{a^8 \times a^3}{a^5} = \dfrac{a^{11}}{a^5} = a^6$ → ⭕ 정답</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">분자: $a^8 \times a^3 = a^{8+3} = a^{11}$</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">분자 ÷ 분모: $\dfrac{a^{11}}{a^5} = a^{11-5} = a^6$</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(12,'나눗셈법칙')">지수 나눗셈 법칙 이해</button>
+        <button class="ai-method-btn" onclick="askAI(12,'응용문제')">응용 문제 연습</button>
+      </div>
+      <div class="ai-result" id="ai-12"></div>
+      <div class="ai-recommend" id="rec-12"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-12-yes" onclick="markUnderstood(12,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-12-no" onclick="markUnderstood(12,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q14 -->
+<div class="problem-card" id="card-14">
+  <div class="card-header" onclick="toggleCard(14)">
+    <span class="qnum" id="qnum-14">14번</span>
+    <span class="q-preview">$(-2a^2)^4$, $(-3x^2y)^3$</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-14" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-14">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-14">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안 & 정답</div>
+      <div class="student-answer">
+        (1) $(-2a^2)^4 = 16a^8$ ⭕ &nbsp;&nbsp; (2) $(-3x^2y)^3 = -27x^6y^3$ ⭕
+      </div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이 (음수 주의!)</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">$(-2a^2)^4 = (-2)^4 \times (a^2)^4 = 16 \times a^8 = 16a^8$</div></div>
+        <div class="step"><div class="step-num">⚡</div><div class="step-content"><strong>음수의 짝수 제곱 → 양수!</strong> $(-2)^4 = +16$</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">$(-3x^2y)^3 = (-3)^3 \times (x^2)^3 \times y^3 = -27 \times x^6 \times y^3 = -27x^6y^3$</div></div>
+        <div class="step"><div class="step-num">⚡</div><div class="step-content"><strong>음수의 홀수 제곱 → 음수!</strong> $(-3)^3 = -27$</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(14,'음수규칙')">음수 부호 규칙 완전 정리</button>
+        <button class="ai-method-btn" onclick="askAI(14,'실수유형')">자주 틀리는 유형</button>
+      </div>
+      <div class="ai-result" id="ai-14"></div>
+      <div class="ai-recommend" id="rec-14"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-14-yes" onclick="markUnderstood(14,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-14-no" onclick="markUnderstood(14,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q19 -->
+<div class="problem-card" id="card-19">
+  <div class="card-header" onclick="toggleCard(19)">
+    <span class="qnum" id="qnum-19">19번</span>
+    <span class="q-preview">$2^n = 8$일 때 $2^{n+2}$ = ?</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-19" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-19">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-19">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">$2^n = 2^3$ → $n=3$, $2^{n+2} = 2^{3+2} = 2^5$ → ⭕ 정답</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">$2^n = 8 = 2^3$ → 밑이 같으면 지수 비교: $n=3$</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">$2^{n+2} = 2^{3+2} = 2^5 = 32$</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(19,'다른방법')">다른 방법으로 풀기</button>
+      </div>
+      <div class="ai-result" id="ai-19"></div>
+      <div class="ai-recommend" id="rec-19"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-19-yes" onclick="markUnderstood(19,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-19-no" onclick="markUnderstood(19,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q21 -->
+<div class="problem-card" id="card-21">
+  <div class="card-header" onclick="toggleCard(21)">
+    <span class="qnum" id="qnum-21">21번</span>
+    <span class="q-preview">$6 \times 16 \div 4$ 관련 문제 → 답: 8</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-21" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-21">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-21">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">계산 결과: 8 → ⭕ 정답</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이 (지수 관련 계산)</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">$2^4 = 16$, $2^1 = 2$, $2^3 = 8$ 등 2의 거듭제곱 관계를 활용</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">지수 계산에서 결과가 8 = $2^3$임을 확인</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 설명</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(21,'지수계산')">지수 계산 연습</button>
+      </div>
+      <div class="ai-result" id="ai-21"></div>
+      <div class="ai-recommend" id="rec-21"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-21-yes" onclick="markUnderstood(21,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-21-no" onclick="markUnderstood(21,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q23 -->
+<div class="problem-card" id="card-23">
+  <div class="card-header" onclick="toggleCard(23)">
+    <span class="qnum" id="qnum-23">23번</span>
+    <span class="q-preview">$\frac{2^{a+3} \times 4^a}{8^2}$ 정리하기</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-23" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-23">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-23">
+    <div class="sol-section">
+      <div class="sol-label">문제</div>
+      <div style="font-size:14px;">$\dfrac{2^{a+3} \times 4^a}{8^2}$을 $2$의 거듭제곱으로 나타내어라.</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">
+        $\dfrac{2^{a+3} \times 2^{2a}}{2^6}$ 으로 변환 후 정리
+      </div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 정확한 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">밑을 2로 통일: $4^a = (2^2)^a = 2^{2a}$, &nbsp; $8^2 = (2^3)^2 = 2^6$</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">$\dfrac{2^{a+3} \times 2^{2a}}{2^6} = \dfrac{2^{a+3+2a}}{2^6} = \dfrac{2^{3a+3}}{2^6}$</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">$= 2^{3a+3-6} = 2^{3a-3} = 2^{3(a-1)}$</div></div>
+        <div class="step"><div class="step-num">💡</div><div class="step-content">자연수 결과: $3a-3 \geq 0$ → $a \geq 1$ (자연수 $a$는 모두 가능)</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(23,'밑통일전략')">밑을 통일하는 전략</button>
+        <button class="ai-method-btn" onclick="askAI(23,'응용문제')">비슷한 응용 문제</button>
+      </div>
+      <div class="ai-result" id="ai-23"></div>
+      <div class="ai-recommend" id="rec-23"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-23-yes" onclick="markUnderstood(23,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-23-no" onclick="markUnderstood(23,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 단원 그룹: 단항식 ── -->
+<div class="topic-header" style="margin-top:24px;">
+  <h2>✖ 단항식의 연산</h2>
+  <p>단항식의 곱셈, 나눗셈, 혼합 계산</p>
+  <div class="topic-progress">
+    <div class="topic-bar"><div class="topic-bar-fill" id="bar-3" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- Q5 -->
+<div class="problem-card" id="card-5">
+  <div class="card-header" onclick="toggleCard(5)">
+    <span class="qnum" id="qnum-5">5번</span>
+    <span class="q-preview">$3a^2 \times 4a^3$, $(-2x)^3$</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-5" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-5">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-5">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안 & 정답</div>
+      <div class="student-answer">
+        (1) $3a^2 \times 4a^3 = 12a^5$ ⭕ &nbsp;&nbsp; (2) $(-2x)^3 = -8x^3$ ⭕
+      </div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">(1) 계수끼리: $3 \times 4 = 12$, 문자끼리: $a^2 \times a^3 = a^5$ → $12a^5$</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">(2) $(-2x)^3 = (-2)^3 \times x^3 = -8x^3$ (홀수 제곱 → 음수)</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(5,'단항식곱셈원리')">단항식 곱셈 원리</button>
+        <button class="ai-method-btn" onclick="askAI(5,'부호규칙')">음수 부호 완전 정복</button>
+      </div>
+      <div class="ai-result" id="ai-5"></div>
+      <div class="ai-recommend" id="rec-5"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-5-yes" onclick="markUnderstood(5,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-5-no" onclick="markUnderstood(5,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q13 -->
+<div class="problem-card" id="card-13">
+  <div class="card-header" onclick="toggleCard(13)">
+    <span class="qnum qnum error" id="qnum-13">13번 ⚠</span>
+    <span class="q-preview">$12a^3b^2 \div 4ab \times 2a^2$ — 오류 확인!</span>
+    <div class="badge-row">
+      <span class="badge badge-err">오답주의</span>
+      <span class="badge badge-ok" id="badge-13" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-13">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-13">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">$6a^4b^2$ (학생 답)</div>
+    </div>
+    <div class="error-note">
+      ⚠ <strong>오류 발견!</strong> 정확한 계산은 $6a^4b$입니다. $b^2 \div b = b$ (b가 하나 남음)
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 올바른 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">$12a^3b^2 \div 4ab \times 2a^2$ → 왼쪽부터 순서대로 계산</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">$12a^3b^2 \div 4ab = \dfrac{12a^3b^2}{4ab} = 3a^2b$</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">$3a^2b \times 2a^2 = 6a^4b$ ← <strong>b는 1개!</strong></div></div>
+        <div class="step"><div class="step-num">❌</div><div class="step-content">학생 실수: $b^2 \div b$를 $b^2$으로 계산 → 실제로는 $b$</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이 (이 문제 꼭 다시 보기!)</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(13,'혼합계산순서')">혼합 계산 순서 정리</button>
+        <button class="ai-method-btn" onclick="askAI(13,'지수뺄셈')">지수 나눗셈 확실히 이해</button>
+        <button class="ai-method-btn" onclick="askAI(13,'분수형태')">분수로 바꿔 풀기</button>
+      </div>
+      <div class="ai-result" id="ai-13"></div>
+      <div class="ai-recommend" id="rec-13"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-13-yes" onclick="markUnderstood(13,true)">✅ 이제 이해했어요</button>
+      <button class="und-btn" id="und-13-no" onclick="markUnderstood(13,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q20 -->
+<div class="problem-card" id="card-20">
+  <div class="card-header" onclick="toggleCard(20)">
+    <span class="qnum" id="qnum-20">20번</span>
+    <span class="q-preview">$\frac{-8a^6b^3}{4a^3b^2} = -2a^3b$</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-20" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-20">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-20">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안 & 정답</div>
+      <div class="student-answer">$\dfrac{-8a^6b^3}{4a^3b^2} = -2a^3b$ → ⭕ 정답</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">계수: $\dfrac{-8}{4} = -2$</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">$a$: $\dfrac{a^6}{a^3} = a^{6-3} = a^3$</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">$b$: $\dfrac{b^3}{b^2} = b^{3-2} = b^1 = b$ ← <strong>13번과 같은 유형!</strong></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content">결과: $-2a^3b$ ✓</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 설명</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(20,'단항식나눗셈')">단항식 나눗셈 총정리</button>
+      </div>
+      <div class="ai-result" id="ai-20"></div>
+      <div class="ai-recommend" id="rec-20"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-20-yes" onclick="markUnderstood(20,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-20-no" onclick="markUnderstood(20,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 단원 그룹: 다항식 ── -->
+<div class="topic-header" style="margin-top:24px;">
+  <h2>➕ 다항식의 연산</h2>
+  <p>동류항 정리, 다항식 덧셈·뺄셈, 전개, 나눗셈</p>
+  <div class="topic-progress">
+    <div class="topic-bar"><div class="topic-bar-fill" id="bar-4" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- Q6 -->
+<div class="problem-card" id="card-6">
+  <div class="card-header" onclick="toggleCard(6)">
+    <span class="qnum" id="qnum-6">6번</span>
+    <span class="q-preview">$(3x^2+5x-2)+(x^2-3x+7)$</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-6" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-6">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-6">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">$(3x^2+5x-2)+(x^2-3x+7) = 4x^2+2x+5$ → ⭕ 정답</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이 (동류항 묶기)</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">$x^2$항: $3x^2 + x^2 = 4x^2$</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">$x$항: $5x + (-3x) = 2x$</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">상수항: $-2 + 7 = 5$</div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content">결과: $4x^2 + 2x + 5$ ✓</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(6,'세로덧셈')">세로 덧셈으로 풀기</button>
+        <button class="ai-method-btn" onclick="askAI(6,'동류항개념')">동류항이 뭔지 설명</button>
+      </div>
+      <div class="ai-result" id="ai-6"></div>
+      <div class="ai-recommend" id="rec-6"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-6-yes" onclick="markUnderstood(6,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-6-no" onclick="markUnderstood(6,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q7 -->
+<div class="problem-card" id="card-7">
+  <div class="card-header" onclick="toggleCard(7)">
+    <span class="qnum" id="qnum-7">7번</span>
+    <span class="q-preview">다항식 개념 선택 — 2, 5번 선택</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-7" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-7">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-7">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">2, 5 선택 → 확인 필요 (문제지 내용 재확인 권장)</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 다항식 핵심 개념 체크</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">다항식의 차수: 각 항의 지수 중 가장 큰 것</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">동류항: 문자와 차수가 같은 항 (예: $3x$와 $-2x$는 동류항)</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">상수항: 문자가 없는 항 (차수 = 0)</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 개념 확인</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(7,'다항식개념')">다항식 용어 완전 정리</button>
+      </div>
+      <div class="ai-result" id="ai-7"></div>
+      <div class="ai-recommend" id="rec-7"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-7-yes" onclick="markUnderstood(7,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-7-no" onclick="markUnderstood(7,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q8 -->
+<div class="problem-card" id="card-8">
+  <div class="card-header" onclick="toggleCard(8)">
+    <span class="qnum qnum check" id="qnum-8">8번 🔍</span>
+    <span class="q-preview">$(5a^2-3a+1)-(2a^2+a-4)$ — 부호 주의!</span>
+    <div class="badge-row">
+      <span class="badge badge-check">확인필요</span>
+      <span class="badge badge-ok" id="badge-8" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-8">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-8">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">$(5a^2-3a+1)-(2a^2+a-4) = 3a^2-2a+5$</div>
+    </div>
+    <div class="error-note">
+      🔍 <strong>확인 필요:</strong> 문제가 $-(2a^2+a-4)$이면 정답은 $3a^2-4a+5$<br>
+      문제가 $-(2a^2-a-4)$이면 학생 답 $3a^2-2a+5$ 정답 ✓<br>
+      → 원본 문제지 다시 확인해보세요!
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 두 가지 계산 비교</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">A</div><div class="step-content">$(5a^2-3a+1)-(2a^2{\color{red}+}a-4)$: $a$항 $= -3a-a = {\color{red}-4a}$ → $3a^2-4a+5$</div></div>
+        <div class="step"><div class="step-num">B</div><div class="step-content">$(5a^2-3a+1)-(2a^2{\color{blue}-}a-4)$: $a$항 $= -3a+a = {\color{blue}-2a}$ → $3a^2-2a+5$ (학생 답)</div></div>
+        <div class="step"><div class="step-num">⚡</div><div class="step-content"><strong>핵심:</strong> 뺄셈 뒤 괄호를 풀 때 <strong>모든 부호 반전!</strong> $-(+a) = -a$</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(8,'괄호부호')">괄호 앞 음수 부호 규칙</button>
+        <button class="ai-method-btn" onclick="askAI(8,'실수방지')">계산 실수 방지법</button>
+        <button class="ai-method-btn" onclick="askAI(8,'검산법')">답 검산하는 방법</button>
+      </div>
+      <div class="ai-result" id="ai-8"></div>
+      <div class="ai-recommend" id="rec-8"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-8-yes" onclick="markUnderstood(8,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-8-no" onclick="markUnderstood(8,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q15 -->
+<div class="problem-card" id="card-15">
+  <div class="card-header" onclick="toggleCard(15)">
+    <span class="qnum" id="qnum-15">15번</span>
+    <span class="q-preview">$2x(3x^2-5x+1)$ 전개</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-15" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-15">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-15">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">$2x(3x^2-5x+1) = 6x^3-10x^2+2x$ → ⭕ 정답</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이 (분배법칙)</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">$2x \times 3x^2 = 6x^3$</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">$2x \times (-5x) = -10x^2$</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">$2x \times 1 = 2x$</div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content">결과: $6x^3 - 10x^2 + 2x$ ✓</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(15,'분배법칙')">분배법칙 원리 이해</button>
+        <button class="ai-method-btn" onclick="askAI(15,'응용')">더 복잡한 전개 연습</button>
+      </div>
+      <div class="ai-result" id="ai-15"></div>
+      <div class="ai-recommend" id="rec-15"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-15-yes" onclick="markUnderstood(15,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-15-no" onclick="markUnderstood(15,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q16 -->
+<div class="problem-card" id="card-16">
+  <div class="card-header" onclick="toggleCard(16)">
+    <span class="qnum" id="qnum-16">16번</span>
+    <span class="q-preview">$(6x^3y-9x^2y^2+3xy) \div 3xy$</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-16" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-16">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-16">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">$(6x^3y-9x^2y^2+3xy) \div 3xy = 2x^2-3xy+1$</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 정확한 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">$\dfrac{6x^3y}{3xy} = 2x^2$ &nbsp; (계수 $6\div3=2$, $x^3\div x=x^2$, $y\div y=1$)</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">$\dfrac{-9x^2y^2}{3xy} = -3xy$ &nbsp; (계수 $-9\div3=-3$, $x^2\div x=x$, $y^2\div y=y$)</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">$\dfrac{3xy}{3xy} = 1$</div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content">결과: $2x^2 - 3xy + 1$ ✓</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(16,'다항식나눗셈')">다항식 나눗셈 원리</button>
+        <button class="ai-method-btn" onclick="askAI(16,'각항나누기')">각 항 따로 나누기</button>
+      </div>
+      <div class="ai-result" id="ai-16"></div>
+      <div class="ai-recommend" id="rec-16"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-16-yes" onclick="markUnderstood(16,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-16-no" onclick="markUnderstood(16,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q17 -->
+<div class="problem-card" id="card-17">
+  <div class="card-header" onclick="toggleCard(17)">
+    <span class="qnum" id="qnum-17">17번</span>
+    <span class="q-preview">개념 선택 — ㄴ, ㄹ</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-17" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-17">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-17">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">ㄴ, ㄹ 선택 → ⭕ 정답</div>
+    </div>
+    <div class="divider"></div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-17-yes" onclick="markUnderstood(17,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-17-no" onclick="markUnderstood(17,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q18 -->
+<div class="problem-card" id="card-18">
+  <div class="card-header" onclick="toggleCard(18)">
+    <span class="qnum" id="qnum-18">18번</span>
+    <span class="q-preview">$2(3x^2-2x+5)-(x^2+4x-1)$</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-18" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-18">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-18">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">$6x^2-4x+10-x^2-4x+1 = 5x^2-8x+11$ → ⭕ 정답</div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">$2(3x^2-2x+5) = 6x^2-4x+10$</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">$-(x^2+4x-1) = -x^2-4x+1$ ← <strong>부호 모두 반전!</strong></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">동류항: $x^2$: $6-1=5$, &nbsp; $x$: $-4-4=-8$, &nbsp; 상수: $10+1=11$</div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content">결과: $5x^2 - 8x + 11$ ✓</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(18,'분배후정리')">분배 → 동류항 순서 연습</button>
+        <button class="ai-method-btn" onclick="askAI(18,'괄호앞숫자')">괄호 앞 숫자 있을 때</button>
+      </div>
+      <div class="ai-result" id="ai-18"></div>
+      <div class="ai-recommend" id="rec-18"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-18-yes" onclick="markUnderstood(18,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-18-no" onclick="markUnderstood(18,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- Q24 -->
+<div class="problem-card" id="card-24">
+  <div class="card-header" onclick="toggleCard(24)">
+    <span class="qnum" id="qnum-24">24번</span>
+    <span class="q-preview">$A + 2x^2 - 3x + 1 = 5x^2 + x - 3$ 에서 A 구하기</span>
+    <div class="badge-row">
+      <span class="badge badge-ok" id="badge-24" style="display:none">✓이해</span>
+      <span class="chevron" id="chevron-24">▼</span>
+    </div>
+  </div>
+  <div class="card-body" id="body-24">
+    <div class="sol-section">
+      <div class="sol-label">✏ 학생 답안</div>
+      <div class="student-answer">
+        $A = 3x^2-2x-2$<br>
+        $A - (2x^2+3x-1) = x^2-5x-1$ → ⭕ 정답
+      </div>
+    </div>
+    <div class="sol-section">
+      <div class="sol-label">📖 풀이</div>
+      <div class="solution-steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">$A = (5x^2+x-3) - (2x^2-3x+1)$</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">$= 5x^2+x-3-2x^2+3x-1 = 3x^2+4x-4$</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">최종 계산: $(3x^2-2x-2)-(2x^2+3x-1) = x^2-5x-1$ ✓ (학생 계산 기준)</div></div>
+        <div class="step"><div class="step-num">💡</div><div class="step-content">문제지 원문을 다시 확인하여 A값이 어떤 식인지 정확히 파악하는 것이 중요합니다</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-section">
+      <div class="sol-label">🤖 AI 다른 풀이</div>
+      <div class="ai-methods">
+        <button class="ai-method-btn" onclick="askAI(24,'미지식구하기')">미지식 A 구하는 전략</button>
+        <button class="ai-method-btn" onclick="askAI(24,'검산법')">구한 A를 검산하기</button>
+      </div>
+      <div class="ai-result" id="ai-24"></div>
+      <div class="ai-recommend" id="rec-24"></div>
+    </div>
+    <div class="understand-row">
+      <button class="und-btn" id="und-24-yes" onclick="markUnderstood(24,true)">✅ 이해했어요</button>
+      <button class="und-btn" id="und-24-no" onclick="markUnderstood(24,false)">❓ 아직 모르겠어요</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /tab-0 -->
+
+<!-- ═══ TABS 1-4: TOPIC FILTERED VIEWS ═══ -->
+<div class="topic-section" id="tab-1">
+  <div class="content">
+    <div class="topic-header"><h2>🔄 유리수와 순환소수만 보기</h2><p>1, 2, 9, 10, 11, 22, 25번</p></div>
+    <p style="color:var(--text-light);text-align:center;padding:20px;">📌 전체 탭에서 해당 문제를 찾아보세요 (스크롤)</p>
+  </div>
+</div>
+<div class="topic-section" id="tab-2">
+  <div class="content">
+    <div class="topic-header"><h2>⚡ 지수법칙만 보기</h2><p>3, 4, 12, 14, 19, 21, 23번</p></div>
+    <p style="color:var(--text-light);text-align:center;padding:20px;">📌 전체 탭에서 해당 문제를 찾아보세요 (스크롤)</p>
+  </div>
+</div>
+<div class="topic-section" id="tab-3">
+  <div class="content">
+    <div class="topic-header"><h2>✖ 단항식만 보기</h2><p>5, 13, 20번</p></div>
+    <p style="color:var(--text-light);text-align:center;padding:20px;">📌 전체 탭에서 해당 문제를 찾아보세요 (스크롤)</p>
+  </div>
+</div>
+<div class="topic-section" id="tab-4">
+  <div class="content">
+    <div class="topic-header"><h2>➕ 다항식만 보기</h2><p>6, 7, 8, 15, 16, 17, 18, 24번</p></div>
+    <p style="color:var(--text-light);text-align:center;padding:20px;">📌 전체 탭에서 해당 문제를 찾아보세요 (스크롤)</p>
+  </div>
+</div>
+
+<!-- ── 복습 패널 버튼 ── -->
+<button class="review-btn" onclick="openReview()" title="복습 현황">📊</button>
+
+<!-- ── 복습 패널 ── -->
+<div class="review-panel" id="review-panel">
+  <div class="review-content">
+    <button class="review-close" onclick="closeReview()">✕ 닫기</button>
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:16px;">📊 최우혁 학습 현황</h2>
+    <div id="review-body"></div>
+  </div>
+</div>
+
+<!-- ── API KEY MODAL ── -->
+<div class="modal-overlay" id="api-modal">
+  <div class="modal">
+    <h3>🤖 AI 풀이 설정</h3>
+    <p>Anthropic API 키를 입력하면 Claude가 다른 방식으로 풀이를 설명해줍니다.<br>
+    입력된 키는 이 기기에만 저장됩니다.</p>
+    <input type="password" class="api-input" id="api-key-input" placeholder="sk-ant-api03-..." />
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeApiModal()">취소</button>
+      <button class="btn-primary" onclick="saveApiKey()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// 데이터 관리 (localStorage)
+// ═══════════════════════════════════════════
+const STORE_KEY = 'yeon_student_woohyuk';
+
+function loadData() {
+  try {
+    return JSON.parse(localStorage.getItem(STORE_KEY)) || initData();
+  } catch(e) { return initData(); }
+}
+
+function initData() {
+  const problems = {};
+  for(let i=1;i<=25;i++) problems[i] = {viewed:false,understood:null,aiCount:0,timestamp:null};
+  return {name:'최우혁',grade:'중1',date:'2026-04-13',problems,aiTotal:0};
+}
+
+function saveData(data) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(data));
+}
+
+// ═══════════════════════════════════════════
+// UI 업데이트
+// ═══════════════════════════════════════════
+function updateStats() {
+  const data = loadData();
+  const probs = Object.values(data.problems);
+  const viewed = probs.filter(p=>p.viewed).length;
+  const understood = probs.filter(p=>p.understood===true).length;
+  const aiTotal = probs.reduce((s,p)=>s+p.aiCount,0);
+  
+  document.getElementById('stat-viewed').textContent = viewed;
+  document.getElementById('stat-understood').textContent = understood;
+  document.getElementById('stat-ai').textContent = aiTotal;
+  
+  const pct = Math.round((viewed/25)*100);
+  document.getElementById('progress-fill').style.width = pct+'%';
+  document.getElementById('progress-text').textContent = 
+    pct===0 ? '학습을 시작해보세요!' :
+    pct===100 ? '🎉 모든 문제 완료!' :
+    `${viewed}/25문제 학습 완료 (${pct}%)`;
+
+  // Topic bars
+  const topicQ = {
+    1:[1,2,9,10,11,22,25], 2:[3,4,12,14,19,21,23],
+    3:[5,13,20], 4:[6,7,8,15,16,17,18,24]
+  };
+  for(let t=1;t<=4;t++){
+    const qs = topicQ[t];
+    const done = qs.filter(q=>data.problems[q]&&data.problems[q].viewed).length;
+    const bar = document.getElementById('bar-'+t);
+    if(bar) bar.style.width = Math.round((done/qs.length)*100)+'%';
+  }
+
+  // Update badges
+  for(let i=1;i<=25;i++){
+    const p = data.problems[i];
+    if(!p) continue;
+    const badge = document.getElementById('badge-'+i);
+    if(!badge) continue;
+    if(p.understood===true){
+      badge.textContent='✓이해'; badge.className='badge badge-ok'; badge.style.display='';
+    } else if(p.understood===false){
+      badge.textContent='?모름'; badge.className='badge badge-err'; badge.style.display='';
+    } else { badge.style.display='none'; }
+
+    // Understand buttons
+    const btnY = document.getElementById('und-'+i+'-yes');
+    const btnN = document.getElementById('und-'+i+'-no');
+    if(btnY && btnN){
+      btnY.className = 'und-btn' + (p.understood===true?' understood':'');
+      btnN.className = 'und-btn' + (p.understood===false?' not-understood':'');
+    }
+  }
+}
+
+// ═══════════════════════════════════════════
+// 카드 토글
+// ═══════════════════════════════════════════
+function toggleCard(num) {
+  const body = document.getElementById('body-'+num);
+  const chev = document.getElementById('chevron-'+num);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  if(chev) chev.textContent = isOpen ? '▼' : '▲';
+
+  if(!isOpen) {
+    // Mark as viewed
+    const data = loadData();
+    if(!data.problems[num]) data.problems[num]={viewed:false,understood:null,aiCount:0};
+    data.problems[num].viewed = true;
+    data.problems[num].timestamp = new Date().toISOString();
+    saveData(data);
+    updateStats();
+    // Re-render math
+    if(window.renderMathInElement) {
+      setTimeout(()=>renderMathInElement(document.getElementById('body-'+num),
+        {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]}),100);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════
+// 이해도 마킹
+// ═══════════════════════════════════════════
+function markUnderstood(num, val) {
+  const data = loadData();
+  if(!data.problems[num]) data.problems[num]={viewed:true,understood:null,aiCount:0};
+  data.problems[num].understood = val;
+  data.problems[num].viewed = true;
+  saveData(data);
+  updateStats();
+}
+
+// ═══════════════════════════════════════════
+// AI 풀이 요청
+// ═══════════════════════════════════════════
+const PROMPTS = {
+  1: {
+    title:'순환소수 판별',
+    context:'분수를 소수로 나타낼 때 유한소수와 순환소수를 구별하는 방법',
+    '개념설명':'유한소수와 순환소수의 차이를 기약분수의 분모를 이용해 판별하는 방법을 중1 눈높이로 설명해주세요.',
+    '예시풀이':'다양한 분수를 예시로 들어 유한소수인지 순환소수인지 판별해주세요.',
+    '암기법':'유한소수/순환소수 판별을 쉽게 기억하는 법을 알려주세요.',
+  },
+  2:{title:'순환소수 표기법',context:'순환소수를 점 표기로 나타내는 방법',
+    '순환마디 개념 설명':'순환마디가 무엇인지 그리고 어디에 점을 찍어야 하는지 설명해주세요.',
+    '다양한 예시 더 보기':'다양한 순환소수 표기 예시를 5개 이상 보여주세요.',
+    '실수하기 쉬운 포인트':'순환소수 표기에서 학생들이 자주 틀리는 부분을 설명해주세요.',
+  },
+  3:{title:'지수법칙',context:'지수법칙 세 가지(곱셈, 거듭제곱, 나눗셈)',
+    '지수가 뭔지 이해하기':'지수가 무엇인지 직관적으로 이해할 수 있게 설명해주세요.',
+    '법칙 표로 정리하기':'지수법칙 3가지를 표로 깔끔하게 정리해주세요.',
+    '헷갈리기 쉬운 것':'지수법칙에서 자주 혼동하는 실수 패턴을 알려주세요.',
+  },
+  4:{title:'지수법칙 선택형',context:'지수법칙 관련 보기 판별',
+    '오답피하기':'지수법칙 선택형에서 흔히 나오는 오답 패턴 3가지를 설명해주세요.',
+  },
+  5:{title:'단항식 곱셈',context:'단항식의 곱셈과 음수 제곱',
+    '단항식곱셈원리':'단항식끼리 곱할 때 계수와 지수를 따로 처리하는 원리를 설명해주세요.',
+    '음수 부호 완전 정복':'(-a)의 짝수/홀수 거듭제곱에서 부호가 어떻게 결정되는지 완전히 설명해주세요.',
+  },
+  6:{title:'다항식 덧셈',context:'다항식 덧셈과 동류항 정리',
+    '세로덧셈으로 풀기':'다항식 덧셈을 세로 방식으로 풀이하는 방법을 보여주세요.',
+    '동류항개념':'동류항이 무엇인지와 왜 동류항끼리만 더할 수 있는지 설명해주세요.',
+  },
+  7:{title:'다항식 용어',context:'다항식 관련 용어와 개념',
+    '다항식개념':'다항식, 단항식, 항, 계수, 차수, 동류항, 상수항을 예시와 함께 정리해주세요.',
+  },
+  8:{title:'다항식 뺄셈',context:'괄호 앞 빼기 부호 처리',
+    '괄호부호':'다항식 뺄셈에서 괄호 앞에 음수 부호가 있을 때 각 항의 부호가 바뀌는 이유를 설명해주세요.',
+    '실수방지':'다항식 뺄셈 계산 시 실수를 방지하는 구체적인 방법을 알려주세요.',
+    '검산법':'다항식 계산 후 답이 맞는지 확인하는 방법을 알려주세요.',
+  },
+  9:{title:'순환소수→분수 변환',context:'순환소수를 분수로 나타내기',
+    '방정식풀이':'x를 놓고 방정식을 세워 0.2̄7̄을 분수로 변환하는 과정을 자세히 보여주세요.',
+    '공식암기':'순환마디 자리수에 따른 분모(99, 999, 90, 990 등) 패턴을 외우는 방법을 알려주세요.',
+    '검증':'분수를 소수로 나눠서 답이 맞는지 검증하는 방법을 보여주세요.',
+  },
+  10:{title:'혼합형 순환소수 변환',context:'순환 안 되는 부분이 있는 순환소수',
+    '방정식 세우기':'x=1.2333..로 놓고 방정식 두 개를 세워 분수로 변환하는 과정을 보여주세요.',
+    '공식설명':'분모가 90, 900, 990 등이 되는 이유를 직관적으로 설명해주세요.',
+    '유사문제 연습':'비슷한 유형 문제 2개와 풀이를 제시해주세요.',
+  },
+  11:{title:'유한소수 조건',context:'기약분수 분모와 유한소수의 관계',
+    '유한소수 원리 이해':'왜 분모가 2와 5의 곱이어야만 유한소수가 되는지 소수점 자릿수와 연결해 설명해주세요.',
+    '응용':'분모에 7이나 11이 있는 분수는 왜 항상 순환소수인지 설명해주세요.',
+    '빠른 판별 방법':'기약분수를 보자마자 유한/무한소수인지 판별하는 빠른 방법을 알려주세요.',
+  },
+  12:{title:'지수 곱셈과 나눗셈',context:'같은 밑의 지수 덧셈/뺄셈',
+    '나눗셈법칙':'a^m ÷ a^n = a^(m-n)이 되는 이유를 분수로 풀어서 설명해주세요.',
+    '응용문제':'지수 혼합 계산 연습 문제 2개를 제시해주세요.',
+  },
+  13:{title:'단항식 혼합계산',context:'곱셈과 나눗셈 혼합 계산',
+    '혼합계산순서':'곱셈과 나눗셈이 섞여 있을 때 왼쪽부터 순서대로 계산하는 이유를 설명해주세요.',
+    '지수뺄셈':'b^2 ÷ b = b인 이유를 지수법칙으로 설명해주세요.',
+    '분수형태':'나눗셈을 모두 분수로 바꿔서 한꺼번에 계산하는 방법을 보여주세요.',
+  },
+  14:{title:'음수의 거듭제곱',context:'음수의 짝수/홀수 제곱 부호 결정',
+    '음수규칙':'(-1)의 n제곱이 n이 짝수일 때 +, 홀수일 때 -인 이유를 직관적으로 설명해주세요.',
+    '자주 틀리는 유형':'(-2a²)⁴ 같은 유형에서 자주 나오는 실수 2가지를 설명해주세요.',
+  },
+  15:{title:'단항식×다항식 전개',context:'분배법칙 적용',
+    '분배법칙':'분배법칙 a(b+c+d)=ab+ac+ad의 원리를 직사각형 넓이로 설명해주세요.',
+    '응용':'3x(2x²-4x+1)처럼 비슷한 문제를 하나 더 풀어주세요.',
+  },
+  16:{title:'다항식÷단항식',context:'각 항을 나누는 방법',
+    '다항식나눗셈':'(ax+bx+c)÷d를 각 항에 나누는 이유를 분배법칙으로 설명해주세요.',
+    '각항나누기':'각 항을 따로따로 나누는 방법의 구체적인 계산 과정을 보여주세요.',
+  },
+  17:{title:'다항식 개념 선택',context:'다항식 관련 보기 판별',},
+  18:{title:'괄호 포함 다항식',context:'분배 후 동류항 정리',
+    '분배후정리':'2A-B 형태에서 분배 먼저, 그 다음 동류항 정리하는 순서를 강조해 설명해주세요.',
+    '괄호앞숫자':'괄호 앞에 숫자(2, -1 등)가 있을 때 처리하는 방법을 설명해주세요.',
+  },
+  19:{title:'지수 방정식',context:'같은 밑 비교로 지수 구하기',
+    '다른방법':'2^n=8을 로그 없이 중1 수준에서 풀 수 있는 두 가지 방법을 알려주세요.',
+  },
+  20:{title:'단항식 분수 계산',context:'분수 형태 단항식 나눗셈',
+    '단항식나눗셈':'계수, x지수, y지수를 각각 따로 처리하는 방법의 장점을 설명해주세요.',
+  },
+  21:{title:'지수 관련 계산',context:'2의 거듭제곱 활용',
+    '지수계산':'2의 거듭제곱 1~12제곱을 빠르게 외우는 방법과 활용법을 알려주세요.',
+  },
+  22:{title:'유한소수 조건 만족하는 개수',context:'3의 배수 개수 세기',
+    '수열로풀기':'a부터 b까지 n의 배수의 개수를 공식으로 빠르게 구하는 방법을 알려주세요.',
+    '실수포인트':'범위를 셀 때 자주 하는 실수(1 더하고 빼기 실수)를 설명해주세요.',
+  },
+  23:{title:'지수 통일 계산',context:'4와 8을 2의 거듭제곱으로 변환',
+    '밑통일전략':'4=2², 8=2³처럼 밑을 통일해서 계산하는 전략을 연습 문제와 함께 설명해주세요.',
+    '응용문제':'비슷하게 밑을 통일해야 하는 연습 문제 1개를 제시해주세요.',
+  },
+  24:{title:'미지식 A 구하기',context:'A + 식 = 식 꼴에서 A 구하기',
+    '미지식구하기':'A+B=C에서 A=C-B임을 이용하는 방법과 주의사항을 설명해주세요.',
+    '검산법':'구한 A를 원래 식에 대입해서 맞는지 확인하는 방법을 보여주세요.',
+  },
+  25:{title:'소수 변환과 유한소수 조건',context:'나눗셈과 분모 조건',
+    '나눗셈설명':'5÷12를 직접 나눗셈해서 0.4166...이 되는 과정을 단계별로 보여주세요.',
+    '유한소수조건':'유한소수가 되기 위한 분모 조건을 이 문제와 연결해서 설명해주세요.',
+  },
+};
+
+const RECOMMEND_TEXT = {
+  '방정식풀이':'✨ <strong>추천 방법:</strong> 방정식 풀이가 원리를 이해하기 가장 좋습니다!',
+  '공식암기':'💡 <strong>추천:</strong> 공식을 외우면 시험에서 빠르게 풀 수 있어요!',
+  '개념설명':'📖 <strong>추천:</strong> 개념 이해가 먼저! 외우기보다 원리를 파악하세요.',
+  '분수형태':'✨ <strong>추천 방법:</strong> 나눗셈을 분수로 바꾸는 방법이 실수를 줄여줍니다!',
+  '밑통일전략':'✨ <strong>추천:</strong> 밑 통일 전략은 지수 문제의 핵심 테크닉입니다!',
+};
+
+async function askAI(qnum, method) {
+  const apiKey = localStorage.getItem('yeon_api_key');
+  if(!apiKey) { openApiModal(); return; }
+  
+  const resultDiv = document.getElementById('ai-'+qnum);
+  const recDiv = document.getElementById('rec-'+qnum);
+  resultDiv.className = 'ai-result loading visible';
+  resultDiv.innerHTML = '<span class="dots-anim">🤖 Claude가 풀이 중</span>';
+  recDiv.className = 'ai-recommend';
+  
+  // Update AI count
+  const data = loadData();
+  if(!data.problems[qnum]) data.problems[qnum]={viewed:true,understood:null,aiCount:0};
+  data.problems[qnum].aiCount = (data.problems[qnum].aiCount||0) + 1;
+  data.problems[qnum].viewed = true;
+  saveData(data);
+  updateStats();
+  
+  const info = PROMPTS[qnum];
+  const methodPrompt = (info && info[method]) || `이 문제를 "${method}" 방식으로 중1 학생에게 설명해주세요.`;
+  
+  const systemMsg = `당신은 연플래닝 수학 AI 튜터입니다. 중학교 1학년 학생 최우혁에게 수학을 설명하고 있습니다.
+다음 규칙을 반드시 지켜주세요:
+1. 중1 수준에 맞게 쉽고 친근하게 설명
+2. 수식은 LaTeX($...$ 또는 $$...$$) 형식으로 작성
+3. 단계를 명확히 번호 매기기
+4. 마지막에 핵심 요약을 한 줄로 정리
+5. 300자 이내로 간결하게
+6. 응원 메시지로 마무리`;
+
+  const userMsg = `문제 단원: ${info ? info.title : qnum+'번'}\n배경: ${info ? info.context : ''}\n\n요청: ${methodPrompt}`;
+  
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version':'2023-06-01'
+      },
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:600,
+        system: systemMsg,
+        messages:[{role:'user',content:userMsg}]
+      })
+    });
+    const json = await res.json();
+    if(json.content && json.content[0]) {
+      const text = json.content[0].text;
+      resultDiv.className = 'ai-result visible';
+      resultDiv.innerHTML = text.replace(/\n/g,'<br>');
+      if(window.renderMathInElement) renderMathInElement(resultDiv,
+        {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});
+      
+      // Show recommendation
+      const recText = RECOMMEND_TEXT[method];
+      if(recText){ recDiv.className='ai-recommend visible'; recDiv.innerHTML=recText; }
+    } else {
+      resultDiv.className='ai-result visible';
+      resultDiv.innerHTML='⚠ 응답을 받지 못했습니다. API 키를 확인해주세요.';
+    }
+  } catch(e) {
+    resultDiv.className='ai-result visible';
+    resultDiv.innerHTML='⚠ 오류: '+e.message;
+  }
+}
+
+// ═══════════════════════════════════════════
+// 탭 전환
+// ═══════════════════════════════════════════
+function switchTab(idx) {
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  document.querySelectorAll('.topic-section').forEach((s,i)=>s.classList.toggle('active',i===idx));
+}
+
+// ═══════════════════════════════════════════
+// API 모달
+// ═══════════════════════════════════════════
+function openApiModal(){
+  document.getElementById('api-modal').classList.add('open');
+  const saved = localStorage.getItem('yeon_api_key');
+  if(saved) document.getElementById('api-key-input').value=saved;
+}
+function closeApiModal(){ document.getElementById('api-modal').classList.remove('open'); }
+function saveApiKey(){
+  const key = document.getElementById('api-key-input').value.trim();
+  if(key){ localStorage.setItem('yeon_api_key',key); closeApiModal(); alert('✅ API 키 저장 완료!'); }
+}
+
+// ═══════════════════════════════════════════
+// 복습 패널
+// ═══════════════════════════════════════════
+function openReview(){
+  const data = loadData();
+  const topics = {
+    '🔄 순환소수':[1,2,9,10,11,22,25],
+    '⚡ 지수법칙':[3,4,12,14,19,21,23],
+    '✖ 단항식':[5,13,20],
+    '➕ 다항식':[6,7,8,15,16,17,18,24]
+  };
+  const errorQs = [13]; // 오답 표시된 문제
+  let html = '';
+  
+  // Overall stats
+  const probs = Object.entries(data.problems);
+  const understood = probs.filter(([,p])=>p.understood===true).length;
+  const notUnderstood = probs.filter(([,p])=>p.understood===false).length;
+  const aiTotal = probs.reduce((s,[,p])=>s+p.aiCount,0);
+  
+  html += `<div style="background:#f0f7f9;border-radius:12px;padding:16px;margin-bottom:16px;">
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div style="text-align:center"><div style="font-size:24px;font-weight:700;color:#5A7A82">${understood}</div><div style="font-size:12px;color:#888">이해함</div></div>
+      <div style="text-align:center"><div style="font-size:24px;font-weight:700;color:#8F6B6B">${notUnderstood}</div><div style="font-size:12px;color:#888">다시 볼 것</div></div>
+      <div style="text-align:center"><div style="font-size:24px;font-weight:700;color:#E8A200">${aiTotal}</div><div style="font-size:12px;color:#888">AI 질문 횟수</div></div>
+    </div>
+  </div>`;
+
+  // 다시 봐야 할 문제
+  const retry = probs.filter(([,p])=>p.understood===false).map(([n])=>n);
+  if(retry.length>0){
+    html += `<div style="background:#fce8e8;border-radius:10px;padding:12px;margin-bottom:12px;">
+      <strong style="color:#8F6B6B;">⚠ 다시 복습 필요: </strong>
+      ${retry.map(n=>`<span style="background:#fff;padding:3px 8px;border-radius:8px;margin:2px;display:inline-block;">${n}번</span>`).join('')}
+    </div>`;
+  }
+
+  // Topic breakdown
+  for(const [topicName, qs] of Object.entries(topics)){
+    const done = qs.filter(q=>data.problems[q]&&data.problems[q].viewed).length;
+    const pct = Math.round((done/qs.length)*100);
+    html += `<div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-weight:600;font-size:14px;">${topicName}</span>
+        <span style="font-size:12px;color:#888">${done}/${qs.length}</span>
+      </div>
+      <div style="background:#e0e0e0;border-radius:8px;height:8px;">
+        <div style="width:${pct}%;background:#5A7A82;height:100%;border-radius:8px;"></div>
+      </div>
+      <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;">
+        ${qs.map(q=>{
+          const p=data.problems[q];
+          const isErr = errorQs.includes(q);
+          const color = !p||!p.viewed ? '#ccc' : p.understood===true ? '#6B8F71' : p.understood===false ? '#8F6B6B' : '#5A7A82';
+          const label = isErr && (!p||!p.understood) ? '⚠' : '';
+          return `<span style="background:${color};color:#fff;font-size:11px;padding:2px 7px;border-radius:8px;">${label}${q}번</span>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Error problems
+  html += `<div style="background:#fff3cd;border-radius:10px;padding:12px;margin-top:8px;">
+    <strong>🎯 선생님 체크:</strong> 13번(단항식 혼합계산)은 오답이 있었습니다. 꼭 다시 풀어보세요!
+  </div>`;
+
+  document.getElementById('review-body').innerHTML = html;
+  document.getElementById('review-panel').classList.add('open');
+}
+
+function closeReview(){
+  document.getElementById('review-panel').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════
+// 초기화
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', ()=>{
+  updateStats();
+  // Render math after a short delay
+  setTimeout(()=>{
+    if(window.renderMathInElement){
+      renderMathInElement(document.body,{
+        delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],
+        throwOnError:false
+      });
+    }
+  },500);
+});
+</script>
+</body>
+</html>
